@@ -1,11 +1,14 @@
 ---
 - hosts: all
   become: true
+  vars:
+    ansible_user: ubuntu
   tasks:
     - name: Ensure Docker is installed
       apt:
         name: docker.io
         state: present
+        update_cache: yes
 
     - name: Add user to docker group (if necessary)
       user:
