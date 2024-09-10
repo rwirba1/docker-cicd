@@ -1,0 +1,16 @@
+---
+- hosts: ec2
+  become: true
+  tasks:
+    - name: Stop any running Docker container
+      shell: |
+        docker stop my-app-container || true
+        docker rm my-app-container || true
+
+    - name: Run the new Docker container
+      docker_container:
+        name: my-app-container
+        image: my-app-image:latest
+        state: started
+        ports:
+          - "8081:8081"
