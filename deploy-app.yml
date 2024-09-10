@@ -18,7 +18,7 @@
 
     - name: Copy code to EC2 instance
       copy:
-        src: /home/ubuntu/docker-cicd  # Source directory (from Jenkins slave)
+        src: /home/ubuntu/workspace/app-build  # Source directory (from Jenkins slave)
         dest: /home/{{ ansible_user }}/app
 
     - name: Build Docker image on the EC2 Docker server
