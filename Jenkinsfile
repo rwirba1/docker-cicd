@@ -21,7 +21,7 @@ pipeline {
         stage('Deploy with Ansible') {
             steps {
                 // Use Ansible to SSH into the EC2 Docker server to build and run the Docker container
-                sshagent(['ec2-ssh-credentials']) {
+                sshagent(['slave-ssh-key']) {
                     sh '''
                     ansible-playbook -i /path/to/inventory deploy_app.yml
                     '''
