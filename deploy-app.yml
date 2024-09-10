@@ -19,7 +19,7 @@
     - name: Copy code to EC2 instance
       copy:
         src: /home/ubuntu/workspace/app-build  # Source directory (from Jenkins slave)
-        dest: /home/{{ ansible_user }}/app
+        dest: /home/ubuntu/app
         owner: ubuntu
         group: ubuntu
         mode: 0755        
