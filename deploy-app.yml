@@ -20,6 +20,9 @@
       copy:
         src: /home/ubuntu/workspace/app-build  # Source directory (from Jenkins slave)
         dest: /home/{{ ansible_user }}/app
+        owner: ubuntu
+        group: ubuntu
+        mode: 0755        
         recurse: yes
 
     - name: Build Docker image on the EC2 Docker server
