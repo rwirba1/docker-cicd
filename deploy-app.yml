@@ -1,13 +1,32 @@
 ---
-- hosts: ec2
+- hosts: all
   become: true
   tasks:
-    - name: Stop any running Docker container
+    - name: Ensure Docker is installed
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Add user to docker group (if necessary)
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    - name: Copy code to EC2 instance
+      copy:
+        src: /home/ubuntu/docker-cicd  # Source directory (from Jenkins slave)
+        dest: /home/{{ ansible_user }}/app
+
+    - name: Build Docker image on the EC2 Docker server
+      command: docker build -t my-app-image:latest . chdir=/home/{{ ansible_user }}/app
+
+    - name: Stop any existing Docker container
       shell: |
         docker stop my-app-container || true
         docker rm my-app-container || true
 
-    - name: Run the new Docker container
+    - name: Run the Docker container on port 8081
       docker_container:
         name: my-app-container
         image: my-app-image:latest

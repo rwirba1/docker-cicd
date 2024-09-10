@@ -6,30 +6,24 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
+                // Pull the code from GitHub on the Jenkins slave node
                 git branch: 'main', url: 'https://github.com/rwirba1/docker-cicd.git'
             }
         }
 
         stage('Build with Maven') {
             steps {
-                // Run Maven build on the slave node
+                // Run Maven build on the slave node (Maven should be installed here)
                 sh 'mvn clean package'
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                // Build the Docker image using the Dockerfile in the project
-                sh 'docker build -t my-app-image:latest .'
             }
         }
 
         stage('Deploy with Ansible') {
             steps {
-                // SSH into EC2 Docker instance via Ansible to deploy and run container
+                // Use Ansible to SSH into the EC2 Docker server to build and run the Docker container
                 sshagent(['ec2-ssh-credentials']) {
                     sh '''
-                    ansible-playbook -i /inventory.ini deploy-app.yml
+                    ansible-playbook -i /path/to/inventory deploy_app.yml
                     '''
                 }
             }
