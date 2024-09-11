@@ -16,11 +16,16 @@
         groups: docker
         append: yes
 
+    - name: Check if user is in the Docker group
+      command: getent group docker
+      register: docker_group_check
+      ignore_errors: yes      
+
     - name: Reboot to apply Docker group changes 
       reboot:                                           
         msg: "Rebooting to apply Docker group changes"  # log out and back in
         pre_reboot_delay: 60
-      when: "'docker' not in ansible_facts.user_gid_map"
+      when: "'ubuntu' not in docker_group_check.stdout"
 
 
     - name: Synchronize code from Jenkins slave to EC2 instance
@@ -28,11 +33,24 @@
         src: /home/ubuntu/workspace/app-build/  # Source on Jenkins slave
         dest: /home/ubuntu/app                  # Destination on EC2 instance
         delete: yes  
-        mode: '0755'                            # Optional: Remove files not present in the source
+        mode: '0755'   
+        
+    - name: Ensure Dockerfile exists
+      stat:
+        path: /home/{{ ansible_user }}/app/Dockerfile
+      register: dockerfile_check
+
+    - name: Build Docker image on the EC2 Docker server
+      command: docker build -t my-app-image:latest .
+      args:
+        chdir: /home/{{ ansible_user }}/app
+      when: dockerfile_check.stat.exists                                 # Optional: Remove files not present in the source
         
 
     - name: Build Docker image on the EC2 Docker server
-      command: docker build -t my-app-image:latest . chdir=/home/{{ ansible_user }}/app
+      command: docker build -t my-app-image:latest .
+      args:
+        chdir: /home/{{ ansible_user }}/app
 
     - name: Stop any existing Docker container
       shell: |
