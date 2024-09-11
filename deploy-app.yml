@@ -72,7 +72,7 @@
 
     - name: Pull code from Git repository on the EC2 instance
       git:
-        repo: 'https://github.com/yourusername/yourrepo.git'  # Replace with your repo
+        repo: 'https://github.com/rwirba1/docker-cicd.git'  # Replace with your repo
         dest: /home/ubuntu/app                               # Destination on the EC2 instance
         version: main                                        # Git branch to pull
 
