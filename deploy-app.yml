@@ -69,12 +69,20 @@
         name: "{{ ansible_user }}"
         groups: docker
         append: yes
+    - name: Ensure /home/ubuntu/app directory exists
+      file:
+        path: /home/ubuntu/app
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'      
 
     - name: Pull code from Git repository on the EC2 instance
       git:
         repo: 'https://github.com/rwirba1/docker-cicd.git'  # Replace with your repo
         dest: /home/ubuntu/app                               # Destination on the EC2 instance
-        version: main                                        # Git branch to pull
+        version: main
+        force: yes                                           # Git branch to pull
 
     - name: List the files in /home/ubuntu/app after pull
       command: ls -l /home/ubuntu/app
