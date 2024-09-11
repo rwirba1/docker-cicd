@@ -16,6 +16,13 @@
         groups: docker
         append: yes
 
+    - name: Reboot to apply Docker group changes 
+      reboot:                                           
+        msg: "Rebooting to apply Docker group changes"  # log out and back in
+        pre_reboot_delay: 60
+      when: "'docker' not in ansible_facts.user_gid_map"
+
+
     - name: Synchronize code from Jenkins slave to EC2 instance
       synchronize:
         src: /home/ubuntu/workspace/app-build/  # Source on Jenkins slave
