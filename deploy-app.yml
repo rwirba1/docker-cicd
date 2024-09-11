@@ -22,7 +22,11 @@
         dest: /home/ubuntu/app
         owner: ubuntu
         group: ubuntu
-        mode: 0755        
+        mode: 0755       
+
+    - name: List the files in /home/ubuntu/app after copy
+      command: ls -l /home/ubuntu/app
+       
 
     - name: Build Docker image on the EC2 Docker server
       command: docker build -t my-app-image:latest . chdir=/home/{{ ansible_user }}/app
