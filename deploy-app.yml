@@ -69,26 +69,27 @@
         name: "{{ ansible_user }}"
         groups: docker
         append: yes
-    - name: Ensure /home/ubuntu/app directory exists
-      file:
-        path: /home/ubuntu/app
+
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: /home/ubuntu/app1
         state: directory
+        mode: '0755'
         owner: ubuntu
-        group: ubuntu
-        mode: '0755'      
+        group: ubuntu   
 
     - name: Pull code from Git repository on the EC2 instance
       git:
         repo: 'https://github.com/rwirba1/docker-cicd.git'  # Replace with your repo
-        dest: /home/ubuntu/app                               # Destination on the EC2 instance
+        dest: /home/ubuntu/app1                               # Destination on the EC2 instance
         version: main
         force: yes                                           # Git branch to pull
 
     - name: List the files in /home/ubuntu/app after pull
-      command: ls -l /home/ubuntu/app
+      command: ls -l /home/ubuntu/app1
 
     - name: Build Docker image on the EC2 Docker server
-      command: docker build -t my-app-image:latest . chdir=/home/ubuntu/app
+      command: docker build -t my-app-image:latest . chdir=/home/ubuntu/app1
 
     - name: Stop any existing Docker container
       shell: |
