@@ -22,7 +22,8 @@
         dest: /home/ubuntu/app
         owner: ubuntu
         group: ubuntu
-        mode: 0755       
+        mode: 0755  
+        recurse: yes     
 
     - name: List the files in /home/ubuntu/app after copy
       command: ls -l /home/ubuntu/app
