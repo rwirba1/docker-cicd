@@ -33,7 +33,13 @@
         src: /home/ubuntu/workspace/app-build/  # Source on Jenkins slave
         dest: /home/ubuntu/app                  # Destination on EC2 instance
         delete: yes  
-        mode: '0755'   
+
+    - name: Set correct permissions for synchronized files
+      file:
+        path: /home/ubuntu/app
+        state: directory
+        mode: '0755'
+        recurse: yes      
         
     - name: Ensure Dockerfile exists
       stat:
