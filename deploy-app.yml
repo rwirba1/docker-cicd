@@ -46,7 +46,7 @@
 #           - "8081:8081"
 
 ---
-- hosts: all
+- hosts: ec2
   become: true
   vars:
     ansible_user: ubuntu
