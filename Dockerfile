@@ -28,7 +28,7 @@ COPY ./target/EzLearn.war $CATALINA_HOME/webapps/ROOT.war
 COPY ./config/tomcat-users.xml $CATALINA_HOME/conf/tomcat-users.xml
 
 # Expose port 8080 for access
-EXPOSE 8081
+EXPOSE 8080
 
 # Start Tomcat
 CMD ["catalina.sh", "run"]
