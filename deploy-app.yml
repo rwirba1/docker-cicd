@@ -1,64 +1,10 @@
-# ---
-# - hosts: all
-#   become: true
-#   vars:
-#     ansible_user: ubuntu
-#   tasks:
-#     - name: Ensure Docker is installed
-#       apt:
-#         name: docker.io
-#         state: present
-#         update_cache: yes
-
-#     - name: Add user to docker group (if necessary)
-#       user:
-#         name: "{{ ansible_user }}"
-#         groups: docker
-#         append: yes
-
-#     - name: Synchronize code from Jenkins slave to EC2 instance
-#       synchronize:
-#         src: /home/ubuntu/workspace/app-build/  # Source on Jenkins slave
-#         dest: /home/ubuntu/app                  # Destination on EC2 instance
-#         delete: yes                             # Optional: Remove files not present in the source
-#         rsync_opts:
-#           - "--chmod=755"   
-#       delegate_to: localhost       
-
-#     - name: List the files in /home/ubuntu/app after copy
-#       command: ls -l /home/ubuntu/app
-       
-
-#     - name: Build Docker image on the EC2 Docker server
-#       command: docker build -t my-app-image:latest . chdir=/home/{{ ansible_user }}/app
-
-#     - name: Stop any existing Docker container
-#       shell: |
-#         docker stop my-app-container || true
-#         docker rm my-app-container || true
-
-#     - name: Run the Docker container on port 8081
-#       docker_container:
-#         name: my-app-container
-#         image: my-app-image:latest
-#         state: started
-#         ports:
-#           - "8081:8081"
-
 ---
 - hosts: all
   become: true
   vars:
     ansible_user: ubuntu
-
   tasks:
-    - name: Ensure Git is installed on the EC2 instance
-      apt:
-        name: git
-        state: present
-        update_cache: yes
-
-    - name: Ensure Docker is installed on the EC2 instance
+    - name: Ensure Docker is installed
       apt:
         name: docker.io
         state: present
@@ -70,26 +16,16 @@
         groups: docker
         append: yes
 
-    - name: Create a directory if it does not exist
-      ansible.builtin.file:
-        path: /home/ubuntu/app1
-        state: directory
-        mode: '0755'
-        owner: ubuntu
-        group: ubuntu   
-
-    - name: Pull code from Git repository on the EC2 instance
-      git:
-        repo: 'https://github.com/rwirba1/docker-cicd.git'  # Replace with your repo
-        dest: /home/ubuntu/app1                               # Destination on the EC2 instance
-        version: main
-        force: yes                                           # Git branch to pull
-
-    - name: List the files in /home/ubuntu/app after pull
-      command: ls -l /home/ubuntu/app1
+    - name: Synchronize code from Jenkins slave to EC2 instance
+      synchronize:
+        src: /home/ubuntu/workspace/app-build/  # Source on Jenkins slave
+        dest: /home/ubuntu/app                  # Destination on EC2 instance
+        delete: yes  
+        mode: '0755'                            # Optional: Remove files not present in the source
+        
 
     - name: Build Docker image on the EC2 Docker server
-      command: docker build -t my-app-image:latest . chdir=/home/ubuntu/app1
+      command: docker build -t my-app-image:latest . chdir=/home/{{ ansible_user }}/app
 
     - name: Stop any existing Docker container
       shell: |
@@ -103,4 +39,63 @@
         state: started
         ports:
           - "8081:8081"
+
+# ---
+# - hosts: all
+#   become: true
+#   vars:
+#     ansible_user: ubuntu
+
+#   tasks:
+#     - name: Ensure Git is installed on the EC2 instance
+#       apt:
+#         name: git
+#         state: present
+#         update_cache: yes
+
+#     - name: Ensure Docker is installed on the EC2 instance
+#       apt:
+#         name: docker.io
+#         state: present
+#         update_cache: yes
+
+#     - name: Add user to docker group (if necessary)
+#       user:
+#         name: "{{ ansible_user }}"
+#         groups: docker
+#         append: yes
+
+#     - name: Create a directory if it does not exist
+#       ansible.builtin.file:
+#         path: /home/ubuntu/app1
+#         state: directory
+#         mode: '0755'
+#         owner: ubuntu
+#         group: ubuntu   
+
+#     - name: Pull code from Git repository on the EC2 instance
+#       git:
+#         repo: 'https://github.com/rwirba1/docker-cicd.git'  # Replace with your repo
+#         dest: /home/ubuntu/app1                               # Destination on the EC2 instance
+#         version: main
+#         force: yes                                           # Git branch to pull
+
+#     - name: List the files in /home/ubuntu/app after pull
+#       command: ls -l /home/ubuntu/app1
+
+#     - name: Build Docker image on the EC2 Docker server
+#       command: docker build -t my-app-image:latest . chdir=/home/ubuntu/app1
+
+#     - name: Stop any existing Docker container
+#       shell: |
+#         docker stop my-app-container || true
+#         docker rm my-app-container || true
+
+#     - name: Run the Docker container on port 8081
+#       docker_container:
+#         name: my-app-container
+#         image: my-app-image:latest
+#         state: started
+#         ports:
+#           - "8081:8081"
 
