@@ -16,14 +16,14 @@
         groups: docker
         append: yes
 
-    - name: Copy code to EC2 instance
-      copy:
-        src: /home/ubuntu/workspace/app-build  # Source directory (from Jenkins slave)
-        dest: /home/ubuntu/app
-        owner: ubuntu
-        group: ubuntu
-        mode: 0755  
-        recurse: yes     
+    - name: Synchronize code from Jenkins slave to EC2 instance
+      synchronize:
+        src: /home/ubuntu/workspace/app-build/  # Source on Jenkins slave
+        dest: /home/ubuntu/app                  # Destination on EC2 instance
+        delete: yes                             # Optional: Remove files not present in the source
+        rsync_opts:
+          - "--chmod=755"   
+      delegate_to: localhost       
 
     - name: List the files in /home/ubuntu/app after copy
       command: ls -l /home/ubuntu/app
