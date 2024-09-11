@@ -21,11 +21,11 @@ pipeline {
         stage('Deploy with Ansible') {
             steps {
                 // Use Ansible to SSH into the EC2 Docker server to build and run the Docker container
-                sshagent(['slave-ssh-key']) {
+                // sshagent(['slave-ssh-key']) {
                     sh '''
-                    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i /home/ubuntu/workspace/app-build/inventory.ini deploy-app.yml
+                    ansible-playbook -i /home/ubuntu/workspace/app-build/inventory.ini deploy-app.yml
                     '''
-                }
+                
             }
         }
     }
