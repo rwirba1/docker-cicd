@@ -128,15 +128,15 @@
       register: dockerfile_check
 
     - name: Build Docker image on the EC2 Docker server (if Dockerfile exists)
-      command: sudo docker build -t my-app-image:latest .
+      command: docker build -t my-app-image:latest .
       args:
         chdir: /home/{{ ansible_user }}/app
       when: dockerfile_check.stat.exists
 
     - name: Stop any existing Docker container
       shell: |
-        sudo docker stop my-app-container || true
-        sudo docker rm my-app-container || true
+        docker stop my-app-container || true
+        docker rm my-app-container || true
 
     - name: Run the Docker container on port 8081
       docker_container:
