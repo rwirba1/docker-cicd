@@ -1,9 +1,16 @@
 pipeline {
     agent {
-        label 'slave'  // Ensures the job runs on the Jenkins slave node (build agent)
+        label 'prod-node'  // Ensures the job runs on the Jenkins slave node (build agent)
     }
 
     stages {
+        stage('Clean Workspace') {
+            steps {
+                // Clean up the workspace before starting the job
+                cleanWs()  // Jenkins workspace cleanup plugin function
+            }
+        }
+
         stage('Checkout Code') {
             steps {
                 // Pull the code from GitHub on the Jenkins slave node

@@ -23,16 +23,15 @@
 
     - name: Reboot to apply Docker group changes 
       reboot:                                           
-        msg: "Rebooting to apply Docker group changes"  # log out and back in
+        msg: "Rebooting to apply Docker group changes"
         pre_reboot_delay: 60
       when: "'ubuntu' not in docker_group_check.stdout"
 
-
     - name: Synchronize code from Jenkins slave to EC2 instance
       synchronize:
-        src: /home/ubuntu/workspace/app-build/  # Source on Jenkins slave
-        dest: /home/ubuntu/app                  # Destination on EC2 instance
-        delete: yes  
+        src: "/home/ubuntu/workspace/{{ jenkins_job_name }}/"
+        dest: /home/ubuntu/app
+        delete: yes
 
     - name: Set correct permissions for synchronized files
       file:
@@ -70,63 +69,4 @@
         state: started
         ports:
           - "8081:8081"
-
-# ---
-# - hosts: all
-#   become: true
-#   vars:
-#     ansible_user: ubuntu
-
-#   tasks:
-#     - name: Ensure Git is installed on the EC2 instance
-#       apt:
-#         name: git
-#         state: present
-#         update_cache: yes
-
-#     - name: Ensure Docker is installed on the EC2 instance
-#       apt:
-#         name: docker.io
-#         state: present
-#         update_cache: yes
-
-#     - name: Add user to docker group (if necessary)
-#       user:
-#         name: "{{ ansible_user }}"
-#         groups: docker
-#         append: yes
-
-#     - name: Create a directory if it does not exist
-#       ansible.builtin.file:
-#         path: /home/ubuntu/app1
-#         state: directory
-#         mode: '0755'
-#         owner: ubuntu
-#         group: ubuntu   
-
-#     - name: Pull code from Git repository on the EC2 instance
-#       git:
-#         repo: 'https://github.com/rwirba1/docker-cicd.git'  # Replace with your repo
-#         dest: /home/ubuntu/app1                               # Destination on the EC2 instance
-#         version: main
-#         force: yes                                           # Git branch to pull
-
-#     - name: List the files in /home/ubuntu/app after pull
-#       command: ls -l /home/ubuntu/app1
-
-#     - name: Build Docker image on the EC2 Docker server
-#       command: docker build -t my-app-image:latest . chdir=/home/ubuntu/app1
-
-#     - name: Stop any existing Docker container
-#       shell: |
-#         docker stop my-app-container || true
-#         docker rm my-app-container || true
-
-#     - name: Run the Docker container on port 8081
-#       docker_container:
-#         name: my-app-container
-#         image: my-app-image:latest
-#         state: started
-#         ports:
-#           - "8081:8081"
 
