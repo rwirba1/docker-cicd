@@ -83,20 +83,19 @@
         state: present
         update_cache: yes
 
-    - name: Add user to the docker group (if necessary)
+    - name: Add user to docker group (if necessary)
       user:
         name: "{{ ansible_user }}"
         groups: docker
         append: yes
 
-    - name: Verify the user is in the Docker group
+    - name: Verify user is in the Docker group
       command: getent group docker
       register: docker_group_check
-      ignore_errors: yes
 
-    - name: Apply Docker group membership without rebooting
-      shell: newgrp docker
-      when: "'{{ ansible_user }}' not in docker_group_check.stdout"
+    - name: Debug Docker group membership
+      debug:
+        var: docker_group_check
 
     - name: Ensure correct permissions on the Docker socket
       file:
@@ -129,15 +128,15 @@
       register: dockerfile_check
 
     - name: Build Docker image on the EC2 Docker server (if Dockerfile exists)
-      command: docker build -t my-app-image:latest .
+      command: sudo docker build -t my-app-image:latest .
       args:
         chdir: /home/{{ ansible_user }}/app
       when: dockerfile_check.stat.exists
 
     - name: Stop any existing Docker container
       shell: |
-        docker stop my-app-container || true
-        docker rm my-app-container || true
+        sudo docker stop my-app-container || true
+        sudo docker rm my-app-container || true
 
     - name: Run the Docker container on port 8081
       docker_container:
