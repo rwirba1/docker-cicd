@@ -2,6 +2,11 @@ pipeline {
     agent {
         label 'prod-node'  // Ensures the job runs on the Jenkins slave node (build agent)
     }
+    environment {
+        M2_HOME = '/opt/maven'
+        PATH = "$M2_HOME/bin:$PATH"
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
+    }    
 
     stages {
         stage('Clean Workspace') {
