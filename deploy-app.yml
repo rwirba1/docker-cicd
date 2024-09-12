@@ -104,10 +104,11 @@
         owner: root
         group: docker
 
-    - name: Restart Docker to apply changes
-      systemd:
-        name: docker
-        state: restarted
+    - name: Reboot to apply Docker group changes 
+      reboot:                                           
+        msg: "Rebooting to apply Docker group changes"
+        pre_reboot_delay: 60
+      when: "'ubuntu' not in docker_group_check.stdout"
 
     - name: Synchronize code from Jenkins slave to EC2 instance
       synchronize:
