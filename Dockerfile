@@ -27,11 +27,8 @@ COPY ./target/EzLearn.war $CATALINA_HOME/webapps/ROOT.war
 # Copy custom tomcat-users.xml to enable basic authentication
 COPY ./config/tomcat-users.xml $CATALINA_HOME/conf/tomcat-users.xml
 
-# Copy custom server.xml to configure Tomcat to listen on port 8081
-COPY ./config/server.xml $CATALINA_HOME/conf/server.xml
-
-# Expose port 8081 for access
-EXPOSE 8081
+# Expose port 8080 for access
+EXPOSE 8080
 
 # Start Tomcat
 CMD ["catalina.sh", "run"]
