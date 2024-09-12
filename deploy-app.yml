@@ -70,10 +70,12 @@
 #         ports:
 #           - "8081:8081"
 
+---
 - hosts: all
   become: true
   vars:
     ansible_user: ubuntu
+
   tasks:
     - name: Ensure Docker is installed
       apt:
@@ -81,20 +83,32 @@
         state: present
         update_cache: yes
 
-    - name: Add user to docker group (if necessary)
+    - name: Add user to the docker group (if necessary)
       user:
         name: "{{ ansible_user }}"
         groups: docker
         append: yes
 
-    - name: Check if user is in the Docker group
+    - name: Verify the user is in the Docker group
       command: getent group docker
       register: docker_group_check
       ignore_errors: yes
 
-    - name: Apply Docker group change to the current session (without reboot)
+    - name: Apply Docker group membership without rebooting
       shell: newgrp docker
       when: "'{{ ansible_user }}' not in docker_group_check.stdout"
+
+    - name: Ensure correct permissions on the Docker socket
+      file:
+        path: /var/run/docker.sock
+        mode: '0660'
+        owner: root
+        group: docker
+
+    - name: Restart Docker to apply changes
+      systemd:
+        name: docker
+        state: restarted
 
     - name: Synchronize code from Jenkins slave to EC2 instance
       synchronize:
