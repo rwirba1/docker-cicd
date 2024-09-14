@@ -67,7 +67,7 @@
         docker stop my-app-container || true
         docker rm my-app-container || true
 
-    - name: Run the Docker container on port 8081
+    - name: Run the Docker container on port 8080
       docker_container:
         name: my-app-container
         image: my-app-image:latest
