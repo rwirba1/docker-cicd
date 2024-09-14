@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'prod-node'  // Ensures the job runs on the Jenkins slave node (build agent)
+        label 'slave-node'  // Ensures the job runs on the Jenkins slave node (build agent)
     }
     environment {
         M2_HOME = '/opt/maven'
